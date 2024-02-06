@@ -150,6 +150,10 @@ def main_page():
 def submit_place():
     if request.method == 'POST':
         data = request.form
+        #加了三行改小写
+        country = data.get('country', '').lower()  # 转换为小写
+        place = data.get('place', '').lower()  # 转换为小写
+        type = data.get('type', '').lower()
         try:
             # 确保这里的字段与HTML表单的name属性相匹配
             attraction = Attraction(data['place'], data['country'], data['type'],data['postalCode'])
