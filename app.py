@@ -212,9 +212,8 @@ def main_page():
     if request.method == 'POST':
         user_id = request.form.get('user_id')
         session['user_id'] = user_id  
-        # 将用户ID存储在会话中，后续使用通过
-        # data = request.form
-        # user_id = session.get('user_id')
+        with open("id.txt", "w") as file:
+            file.write(user_id)
         return render_template('main_page.html')
     else:
         return render_template('main_page.html')
@@ -224,6 +223,10 @@ def main_page():
 def submit_place():
     if request.method == 'POST':
         data = request.form
+        # 将用户ID存储在会话中，后续使用通过
+        user_id = session.get('user_id')
+        with open("id.txt", "w") as file:
+            file.write(user_id)
         valid_types = ['natural attractions', 'cultural and historical attractions', 'modern entertainment attractions']
         if type not in valid_types:
             return render_template('error.html', error="Invalid type provided. Please choose a valid attraction type.")
