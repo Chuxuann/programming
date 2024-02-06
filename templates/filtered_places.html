@@ -23,7 +23,8 @@
             font-size: 14px;
             margin-right: 5px; /* Add space between input field and button */
         }
-        .search-field button {
+        .search-field button,
+        .return-button {
             padding: 10px 15px;
             font-size: 14px;
             background-color: #36CFFF;
@@ -60,6 +61,8 @@
             </form>
         </div>
         <p class="comment">Note: Only 'Natural Attractions', 'Cultural and Historical Attractions', and 'Modern Entertainment Attractions' types are valid.</p>
+        <!-- Button to return to the main site -->
+        <button onclick="window.location.href='main_page.html';" class="return-button">Return to Main Site</button>
         <h2>Country Place Votes</h2>
         <!-- Content where search results will be displayed -->
         <table id="placesTable">

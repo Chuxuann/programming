@@ -5,19 +5,51 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Place Voting</title>
 <style>
-    /* ... other CSS styles ... */
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background: #f4f4f4;
+    }
+    .container {
+        max-width: 800px;
+        margin: 20px auto;
+        padding: 20px;
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    h1 {
+        color: #333;
+    }
     .highlight {
         font-weight: bold;
+        color: #27a;
     }
     .button {
-        display: inline-block;
-        padding: 10px;
+        display: block;
+        width: 100%;
+        padding: 10px 20px;
         font-size: 16px;
         background-color: #36CFFF;
         color: white;
         border: none;
         border-radius: 5px;
         cursor: pointer;
+        text-decoration: none;
+        transition: background-color 0.3s;
+        margin-top: 10px;
+    }
+    .button:hover {
+        background-color: #2baaf7;
+    }
+    textarea {
+        width: calc(100% - 22px);
+        padding: 10px;
+        border-radius: 4px;
+        border: 1px solid #ddd;
+        min-height: 100px;
+        margin-bottom: 10px;
     }
 </style>
 </head>
@@ -26,40 +58,54 @@
 <div class="container">
     <h1>Place voting</h1>
     <div id="placeInfo">
-        <p><span class="highlight">Place Name:</span> {{ attraction_dict.name }}, <span class="highlight">Vote Count:</span> {{ attraction_dict.votes }}</p>
+        <p>Place Name: <span class="highlight">Eiffel Tower</span></p>
+        <p>Type: <span class="highlight">Cultural and Historical Attraction</span></p>
+        <p>Country: <span class="highlight">France</span></p>
+        <p>Postal Code: <span class="highlight">75007</span></p>
+        <p>Vote Count: <span class="highlight">12345</span></p>
     </div>
     <div id="voterComments">
         <p>Comments of voters:</p>
-        {% for comment in attraction_dict.comments %}
-            <p class="highlight">{{ comment }}</p>
-        {% endfor %}
+        <div id="votersCommentsContainer">
+            <!-- Existing comments will be listed here -->
+            <p class="highlight">"An unforgettable visit, especially at night!"</p>
+            <p class="highlight">"The view from the top is magnificent and well worth the wait."</p>
+            <!-- More comments can be added dynamically -->
+        </div>
     </div>
     <div id="votingSection">
         <p>Comments if you want to vote for this place (if any):</p>
         <textarea id="voterCommentInput"></textarea>
         <button onclick="submitVote()" class="button">Vote</button>
+        <!-- Button to return to the main site -->
+        <button onclick="window.location.href='main_page.html';" class="button">Return to Main Site</button>
     </div>
 </div>
 
 <script>
 // JavaScript to handle voting
 function submitVote() {
-    var comment = document.getElementById('voterCommentInput').value;
-    // BACKEND DATA NEEDED: Check with the backend if the user has already voted for this place.
-    var hasVoted = /* <span class="highlight">User's Voting Status (boolean)</span> */;
+    var comment = document.getElementById('voterCommentInput').value.trim();
+    if (comment === '') {
+        alert('Please enter a comment before voting.');
+        return;
+    }
+    
+    // Simulate a successful vote submission for demonstration purposes
+    var voteSubmitted = true; // This should come from the server
 
-    if (hasVoted) {
-        alert('Invalid vote! Already voted once.');
+    if (voteSubmitted) {
+        var votersCommentsContainer = document.getElementById('votersCommentsContainer');
+        var p = document.createElement('p');
+        p.classList.add('highlight');
+        p.textContent = '"' + comment + '"';
+        votersCommentsContainer.appendChild(p);
+        document.getElementById('voterCommentInput').value = ''; // Clear the input after submitting
+        alert('Your vote has been successfully submitted!');
     } else {
-        // BACKEND DATA NEEDED: Submit the vote and comment to the backend.
-        // Add the new comment to the voters' comments section.
-        document.getElementById('voterComments').innerHTML += '<p class="highlight">' + comment + '</p>';
-        alert('Successfully voted!');
+        alert('There was a problem submitting your vote. Please try again.');
     }
 }
-
-// ... Other JavaScript code ...
-
 </script>
 </body>
 </html>
