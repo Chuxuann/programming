@@ -58,19 +58,10 @@
 <div class="container">
     <h1>Place voting</h1>
     <div id="placeInfo">
-        <p>Place Name: <span class="highlight">Eiffel Tower</span></p>
-        <p>Type: <span class="highlight">Cultural and Historical Attraction</span></p>
-        <p>Country: <span class="highlight">France</span></p>
-        <p>Postal Code: <span class="highlight">75007</span></p>
-        <p>Vote Count: <span class="highlight">12345</span></p>
     </div>
     <div id="voterComments">
         <p>Comments of voters:</p>
         <div id="votersCommentsContainer">
-            <!-- Existing comments will be listed here -->
-            <p class="highlight">"An unforgettable visit, especially at night!"</p>
-            <p class="highlight">"The view from the top is magnificent and well worth the wait."</p>
-            <!-- More comments can be added dynamically -->
         </div>
     </div>
     <div id="votingSection">
@@ -78,34 +69,90 @@
         <textarea id="voterCommentInput"></textarea>
         <button onclick="submitVote()" class="button">Vote</button>
         <!-- Button to return to the main site -->
-        <button onclick="window.location.href='main_page.html';" class="button">Return to Main Site</button>
+        <button onclick="window.location.href='/tourism';" class="button">Return to Main Site</button>
     </div>
 </div>
 
+
 <script>
-// JavaScript to handle voting
+    function getAttractionNameFromURL() {
+    // 获取 URL 路径的最后一部分作为景点名称
+    const pathParts = window.location.pathname.split('/');
+    const attractionName = pathParts[pathParts.length - 1];
+    return attractionName;
+}
+
+
+// Function to fetch attraction details from the backend
+function fetchAttractionDetails() {
+    var attractionName = getAttractionNameFromURL();
+    if (!attractionName) {
+        alert('Attraction name is missing in the URL');
+        return;
+    }
+
+    fetch('/tourism/PlaceVoteInfo/' + encodeURIComponent(attractionName))
+    .then(response => response.json())
+    .then(data => {
+        if(data.error) {
+            alert('Attraction not found');
+        } else {
+            // Populate attraction details
+            document.getElementById('attractionName').textContent = data.name;
+            document.getElementById('attractionType').textContent = data.type;
+            document.getElementById('attractionCountry').textContent = data.country;
+            document.getElementById('attractionPostalCode').textContent = data.postcode;
+            document.getElementById('attractionVotes').textContent = data.votes;
+
+            // Populate comments
+            var commentsHtml = data.comments.map(comment => `<p class="comment">${comment}</p>`).join('');
+            document.getElementById('votersCommentsContainer').innerHTML = commentsHtml;
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+}
+
+// Function to handle the voting
 function submitVote() {
-    var comment = document.getElementById('voterCommentInput').value.trim();
-    if (comment === '') {
+    var commentInput = document.getElementById('voterCommentInput');
+    var comment = commentInput.value.trim();
+    var attractionName = getAttractionNameFromURL();
+
+    if (!comment) {
         alert('Please enter a comment before voting.');
         return;
     }
-    
-    // Simulate a successful vote submission for demonstration purposes
-    var voteSubmitted = true; // This should come from the server
 
-    if (voteSubmitted) {
-        var votersCommentsContainer = document.getElementById('votersCommentsContainer');
-        var p = document.createElement('p');
-        p.classList.add('highlight');
-        p.textContent = '"' + comment + '"';
-        votersCommentsContainer.appendChild(p);
-        document.getElementById('voterCommentInput').value = ''; // Clear the input after submitting
-        alert('Your vote has been successfully submitted!');
-    } else {
-        alert('There was a problem submitting your vote. Please try again.');
-    }
+    var voteData = {
+        comment: comment
+    };
+
+    fetch('/tourism/PlaceVoteInfo/' + encodeURIComponent(attractionName), {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(voteData),
+    })
+    .then(response => response.json())
+    .then(data => {
+        if(data.message) {
+            alert('Vote submitted successfully');
+            commentInput.value = ''; // Clear the input
+            fetchAttractionDetails(); // Refresh the comments
+        } else {
+            alert('Error submitting vote');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
 }
+
+// Call this function when the page loads to fill in the details
+document.addEventListener('DOMContentLoaded', fetchAttractionDetails);
 </script>
 </body>
 </html>
