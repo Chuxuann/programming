@@ -150,10 +150,17 @@ def main_page():
 def submit_place():
     if request.method == 'POST':
         data = request.form
-        #加了三行改小写
+        ###加了改小写
         country = data.get('country', '').lower()  # 转换为小写
         place = data.get('place', '').lower()  # 转换为小写
         type = data.get('type', '').lower()
+
+        ###加了type报错
+        valid_types = ['natural attractions', 'cultural and historical attractions', 'modern entertainment attractions']
+        if type not in valid_types:
+            # 如果类型无效，渲染并返回一个错误页面
+            return render_template('error.html', error="Invalid type provided. Please choose a valid attraction type.")
+        
         try:
             # 确保这里的字段与HTML表单的name属性相匹配
             attraction = Attraction(data['place'], data['country'], data['type'],data['postalCode'])
