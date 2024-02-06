@@ -210,6 +210,7 @@ system = AttractionSystem()
 @app.route('/tourism', methods=['GET', 'POST'])
 def main_page():
     if request.method == 'POST':
+        # 将用户ID存储在会话中 0206
         user_id = request.form.get('user_id')
         session['user_id'] = user_id  
         with open("id.txt", "w") as file:
@@ -223,10 +224,7 @@ def main_page():
 def submit_place():
     if request.method == 'POST':
         data = request.form
-        # 将用户ID存储在会话中，后续使用通过
         user_id = session.get('user_id')
-        with open("id.txt", "w") as file:
-            file.write(user_id)
         valid_types = ['natural attractions', 'cultural and historical attractions', 'modern entertainment attractions']
         if type not in valid_types:
             return render_template('error.html', error="Invalid type provided. Please choose a valid attraction type.")
@@ -247,7 +245,7 @@ def submit_place():
 
 @app.route('/tourism/VoteHistory', methods=['GET'])
 def voting_history():
-    user_id = request.args.get('user_id')
+    user_id = session.get('user_id')
     user_node = system.users.find(user_id)
     if user_node:
         user = user_node.data
