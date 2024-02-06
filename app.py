@@ -6,6 +6,7 @@ from flask import Flask, request, render_template, jsonify
 import matplotlib.pyplot as plt
 import io
 import base64
+import sys
 
 app = Flask(__name__)
 
@@ -72,11 +73,54 @@ class User:
         self.vote_history.insert(attraction_name, comment)
 
 class AttractionSystem:
+    
+    votes_file = "votes.txt"
+    places_file = "places.txt"
+
     def __init__(self):
         self.users = BinarySearchTree()
         self.countries = BinarySearchTree()
         self.types = BinarySearchTree()
         self.attractions = BinarySearchTree()
+
+        # initialize records
+        try:
+            with open(self.votes_file, "r") as file:
+                lines = file.readlines() 
+                if not lines:
+                    print("No previous user info.")
+                else:
+                    for line in lines:
+                        parts = line.strip().split("||")
+                        user_id = parts[0]
+                        if not self.users.find(user_id):
+                            self.users.insert(user_id, User(user_id))
+                        for part in parts[1:]:
+                            elements = part.strip().split('|')
+                            place_voted = elements[0].strip()
+                            vote_comment = elements[1].strip()
+                            user_node = self.users.find(user_id)
+                            user_node.data.vote_history.insert(place_voted, vote_comment)
+                    print("Votings loaded successfully.")
+        except FileNotFoundError:
+            print(f"{self.votes_file} not found, starting fresh.")
+        try:
+            with open(self.places_file, "r") as file:
+                lines = file.readlines() 
+                if not lines:
+                    print("No previous attraction info.")
+                else:
+                    for line in lines:
+                        parts = line.strip().split("||")
+                        name, country, type, postcode, votes, comments = parts
+                        attraction = Attraction(name, country, type, postcode)
+                        attraction.votes = int(votes)
+                        attraction.comments = comments.split("|")  
+                        self.attractions.insert(name, attraction)
+                    print("Attractions loaded successfully.")
+        except FileNotFoundError:
+            print(f"{self.places_file} not found, starting fresh.")  
+            
 
     def insert_attraction(self, attraction):
         # Insert into country BST
@@ -133,6 +177,36 @@ class AttractionSystem:
             return [attraction.data for attraction in type_node.data.root.inorder()]
         else:
             return []
+
+
+    # quit system and save votes and place info into txt files
+    def quit(self):
+        if self.users.root:
+            with open(self.votes_file, "w") as file:
+                for user_node in self.users.root.inorder():
+                    user = user_node.data
+                    user_id = user.user_id
+                    line = f"{user_id}"
+                    vote_histories = user.vote_history
+                    for vote_node in vote_histories.root.inorder():
+                        place_voted = vote_node.key
+                        vote_comment = vote_node.data
+                        line += f"||{place_voted}|{vote_comment}"
+                    file.write(line+"\n")     
+        else:   
+            print("No voting records to save.")
+            
+        if self.attractions.root:
+            with open(self.places_file, "w") as file:
+                for attraction_node in self.attractions.root.inorder():
+                    attraction = attraction_node.data
+                    comments_str = "|".join(attraction.comments)
+                    line = f"{attraction.name}||{attraction.country}||{attraction.type}||{attraction.postcode}||{attraction.votes}||{comments_str}\n"
+                    file.write(line)  
+        else:   
+            print("No attraction records to save.")
+        sys.exit(0)
+
 
 # 实例化AttractionSystem
 system = AttractionSystem()
