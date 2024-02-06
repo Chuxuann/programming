@@ -73,55 +73,54 @@ class User:
         self.vote_history.insert(attraction_name, comment)
 
 class AttractionSystem:
-
+    
     votes_file = "votes.txt"
     places_file = "places.txt"
     
     def __init__(self):
-
+        #Initialize records cx0206
+        # try:
+        #     with open(self.votes_file, "r") as file:
+        #         lines = file.readlines() 
+        #         if not lines:
+        #             print("No previous user info.")
+        #         else:
+        #             for line in lines:
+        #                 parts = line.strip().split("||")
+        #                 user_id = parts[0]
+        #                 if not self.users.find(user_id):
+        #                     self.users.insert(user_id, User(user_id))
+        #                 for part in parts[1:]:
+        #                     elements = part.strip().split('|')
+        #                     place_voted = elements[0].strip()
+        #                     vote_comment = elements[1].strip()
+        #                     user_node = self.users.find(user_id)
+        #                     user_node.data.vote_history.insert(place_voted, vote_comment)
+        #             print("Votings loaded successfully.")
+        # except FileNotFoundError:
+        #     print(f"{self.votes_file} not found, starting fresh.")
+        # try:
+        #     with open(self.places_file, "r") as file:
+        #         lines = file.readlines() 
+        #         if not lines:
+        #             print("No previous attraction info.")
+        #         else:
+        #             for line in lines:
+        #                 parts = line.strip().split("||")
+        #                 name, country, type, postcode, votes, comments = parts
+        #                 attraction = Attraction(name, country, type, postcode)
+        #                 attraction.votes = int(votes)
+        #                 attraction.comments = comments.split("|")  
+        #                 self.attractions.insert(name, attraction)
+        #             print("Attractions loaded successfully.")
+        # except FileNotFoundError:
+        #     print(f"{self.places_file} not found, starting fresh.")  
+            
         self.users = BinarySearchTree()
         self.countries = BinarySearchTree()
         self.types = BinarySearchTree()
         self.attractions = BinarySearchTree()
 
-        #Initialize records cx0206
-        try:
-            with open(self.votes_file, "r") as file:
-                lines = file.readlines() 
-                if not lines:
-                    print("No previous user info.")
-                else:
-                    for line in lines:
-                        parts = line.strip().split("||")
-                        user_id = parts[0]
-                        if not self.users.find(user_id):
-                            self.users.insert(user_id, User(user_id))
-                        for part in parts[1:]:
-                            elements = part.strip().split('|')
-                            place_voted = elements[0].strip()
-                            vote_comment = elements[1].strip()
-                            user_node = self.users.find(user_id)
-                            user_node.data.vote_history.insert(place_voted, vote_comment)
-                    print("Votings loaded successfully.")
-        except FileNotFoundError:
-            print(f"{self.votes_file} not found, starting fresh.")
-        try:
-            with open(self.places_file, "r") as file:
-                lines = file.readlines() 
-                if not lines:
-                    print("No previous attraction info.")
-                else:
-                    for line in lines:
-                        parts = line.strip().split("||")
-                        name, country, type, postcode, votes, comments = parts
-                        attraction = Attraction(name, country, type, postcode)
-                        attraction.votes = int(votes)
-                        attraction.comments = comments.split("|")  
-                        self.attractions.insert(name, attraction)
-                    print("Attractions loaded successfully.")
-        except FileNotFoundError:
-            print(f"{self.places_file} not found, starting fresh.")  
-            
     def insert_attraction(self, attraction):
         # Insert into country BST
         country_node = self.countries.find(attraction.country)
