@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Place Voting</title>
+<style>
+    /* ... other CSS styles ... */
+    .highlight {
+        font-weight: bold;
+    }
+    .button {
+        display: inline-block;
+        padding: 10px;
+        font-size: 16px;
+        background-color: #36CFFF;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+</style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Place voting</h1>
+    <div id="placeInfo">
+        <p><span class="highlight">Place Name:</span> {{ attraction_dict.name }}, <span class="highlight">Vote Count:</span> {{ attraction_dict.votes }}</p>
+    </div>
+    <div id="voterComments">
+        <p>Comments of voters:</p>
+        {% for comment in attraction_dict.comments %}
+            <p class="highlight">{{ comment }}</p>
+        {% endfor %}
+    </div>
+    <div id="votingSection">
+        <p>Comments if you want to vote for this place (if any):</p>
+        <textarea id="voterCommentInput"></textarea>
+        <button onclick="submitVote()" class="button">Vote</button>
+    </div>
+</div>
+
+<script>
+// JavaScript to handle voting
+function submitVote() {
+    var comment = document.getElementById('voterCommentInput').value;
+    // BACKEND DATA NEEDED: Check with the backend if the user has already voted for this place.
+    var hasVoted = /* <span class="highlight">User's Voting Status (boolean)</span> */;
+
+    if (hasVoted) {
+        alert('Invalid vote! Already voted once.');
+    } else {
+        // BACKEND DATA NEEDED: Submit the vote and comment to the backend.
+        // Add the new comment to the voters' comments section.
+        document.getElementById('voterComments').innerHTML += '<p class="highlight">' + comment + '</p>';
+        alert('Successfully voted!');
+    }
+}
+
+// ... Other JavaScript code ...
+
+</script>
+</body>
+</html>
