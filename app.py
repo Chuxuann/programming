@@ -73,11 +73,17 @@ class User:
         self.vote_history.insert(attraction_name, comment)
 
 class AttractionSystem:
-    
+
     votes_file = "votes.txt"
     places_file = "places.txt"
     
     def __init__(self):
+
+        self.users = BinarySearchTree()
+        self.countries = BinarySearchTree()
+        self.types = BinarySearchTree()
+        self.attractions = BinarySearchTree()
+
         #Initialize records cx0206
         try:
             with open(self.votes_file, "r") as file:
@@ -116,11 +122,6 @@ class AttractionSystem:
         except FileNotFoundError:
             print(f"{self.places_file} not found, starting fresh.")  
             
-        self.users = BinarySearchTree()
-        self.countries = BinarySearchTree()
-        self.types = BinarySearchTree()
-        self.attractions = BinarySearchTree()
-
     def insert_attraction(self, attraction):
         # Insert into country BST
         country_node = self.countries.find(attraction.country)
