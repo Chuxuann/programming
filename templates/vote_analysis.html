@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vote Counts Analysis</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .search-field {
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+        }
+        .search-field input {
+            padding: 10px;
+            font-size: 16px;
+            margin-right: 10px; /* Add space between input field and button */
+        }
+        .search-field label {
+            margin-right: 10px; /* Add space between label and input field */
+        }
+        .button {
+            padding: 10px;
+            font-size: 16px;
+            background-color: #36CFFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-align: center;
+            display: block; /* Make the button expand to fill the container */
+            width: 100%;
+            margin-top: 10px; /* Add space on top of the button */
+        }
+        canvas {
+            margin-top: 20px;
+        }
+    </style>
+    <!-- 引入图表库，例如 Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="search-field">
+            <label for="country">Country:</label>
+            <input type="text" id="country" placeholder="Search country">
+            <button class="button" onclick="searchCountry()">Search</button>
+        </div>
+        <div class="search-field">
+            <label for="type">Type:</label>
+            <input type="text" id="type" placeholder="Search type">
+            <button class="button" onclick="searchType()">Search</button>
+        </div>
+        <!-- 图表的容器 -->
+        <canvas id="barChart"></canvas>
+        <!-- Add return to main site button -->
+        <button class="button" onclick="window.location.href='/tourism.html';">Return to Main Site</button>
+    </div>
+    <script>
+        // 假数据，实际应该从服务器端获取
+        var data = {
+            'France': {'Museum': 120, 'Park': 55, 'Historical': 70},
+            'Japan': {'Museum': 95, 'Park': 80, 'Historical': 45},
+            // ...
+        };
+
+        var chartInstance = null; // 用来存储图表实例
+
+        function searchCountry() {
+            var country = document.getElementById('country').value;
+            // 根据 country 获取数据，这里只是模拟
+            var countryData = data[country] || {};
+            updateChart(countryData);
+        }
+
+        function searchType() {
+            var type = document.getElementById('type').value;
+            // 根据 type 获取数据，这里只是模拟
+            var typeData = {};
+            for (var country in data) {
+                if (data[country][type]) {
+                    typeData[country] = data[country][type];
+                }
+            }
+            updateChart(typeData);
+        }
+
+        function updateChart(chartData) {
+            var ctx = document.getElementById('barChart').getContext('2d');
+            
+            // 销毁之前的图表实例
+            if (chartInstance) {
+                chartInstance.destroy();
+            }
+            
+            // 使用 Chart.js 创建新的图表
+            chartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(chartData),
+                    datasets: [{
+                        label: 'Votes Count',
+                        data: Object.values(chartData),
+                        backgroundColor: 'rgba(0, 123, 255, 0.5)',
+                        borderColor: 'rgba(0, 123, 255, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>
+
+
