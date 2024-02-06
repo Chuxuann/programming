@@ -41,18 +41,39 @@
     </style>
     <script>
         function promptForUserId() {
-            var userId = prompt("Please input your user ID：", "");
-            if (userId != null && userId !== '') {
-                document.getElementById('user-id-display').textContent = 'user ID: ' + userId;
+            // 检查会话存储中是否已经存在 user id
+            var storedUserId = sessionStorage.getItem('user_id');
+            if (storedUserId) {
+                // 如果已经存在 user id，则直接显示并提交表单
+                document.getElementById('user-id-display').textContent = 'user ID: ' + storedUserId;
+
+            } else {
+                // 如果没有存在 user id，则提示用户输入
+                var userId = prompt("Please input your user ID：", "");
+                if (userId != null && userId !== '') {
+                    // 将 user id 存储到会话存储中
+                    sessionStorage.setItem('user_id', userId);
+                    // 显示 user id 并提交表单
+                    document.getElementById('user-id-display').textContent = 'user ID: ' + userId;
+                    var input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = 'user_id';
+                    input.value = userId;
+                    document.getElementById('user-id-form').appendChild(input);
+                    // 提交表单
+                    document.getElementById('user-id-form').submit();
+                }
             }
         }
         window.onload = promptForUserId;
     </script>
+
 </head>
 <body>
     <div id="user-id-display">user ID: </div>
     <div class="container">
         <h1>Main Site - Global Tourist Attraction Survey System</h1>
+        <form id="user-id-form" action="/tourism" method="post"></form> <!-- 注意这里添加了一个空表单 -->
         <p>This is the central hub designed to seamlessly connect you to various facets of the GTASS platform.</p>
         <h2>Functions of Every Button:</h2>
         <ol>
@@ -80,4 +101,3 @@
     </div>
 </body>
 </html>
-
