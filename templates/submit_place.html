@@ -80,6 +80,31 @@
         <div id="successMessage" class="success-message" style="display: none;">Successfully submitted!</div>
         <div id="errorMessage" class="error-message" style="display: none;">Invalid input! Input again.</div>
     </div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+$(document).ready(function() {
+    $('#locationForm').on('submit', function(e) {
+        e.preventDefault(); // 阻止表单以传统方式提交
+        $.ajax({
+            url: '/tourism/submit', // 提交到应用的URL
+            type: 'POST',
+            data: $(this).serialize(), // 序列化表单数据
+            success: function(response) {
+                // 如果提交成功
+                $('#successMessage').show().text(response.message);
+                $('#errorMessage').hide();
+            },
+            error: function(xhr, status, error) {
+                // 如果出现错误
+                const response = JSON.parse(xhr.responseText);
+                $('#errorMessage').show().text(response.message);
+                $('#successMessage').hide();
+            }
+        });
+    });
+});
+</script>
+
 </body>
 </html>
 
