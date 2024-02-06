@@ -6,7 +6,6 @@ from flask import Flask, request, render_template, jsonify
 import matplotlib.pyplot as plt
 import io
 import base64
-import sys
 
 app = Flask(__name__)
 
@@ -76,14 +75,9 @@ class AttractionSystem:
     
     votes_file = "votes.txt"
     places_file = "places.txt"
-
+    
     def __init__(self):
-        self.users = BinarySearchTree()
-        self.countries = BinarySearchTree()
-        self.types = BinarySearchTree()
-        self.attractions = BinarySearchTree()
-
-        # initialize records
+        #Initialize records cx0206
         try:
             with open(self.votes_file, "r") as file:
                 lines = file.readlines() 
@@ -121,6 +115,10 @@ class AttractionSystem:
         except FileNotFoundError:
             print(f"{self.places_file} not found, starting fresh.")  
             
+        self.users = BinarySearchTree()
+        self.countries = BinarySearchTree()
+        self.types = BinarySearchTree()
+        self.attractions = BinarySearchTree()
 
     def insert_attraction(self, attraction):
         # Insert into country BST
@@ -177,9 +175,8 @@ class AttractionSystem:
             return [attraction.data for attraction in type_node.data.root.inorder()]
         else:
             return []
-
-
-    # quit system and save votes and place info into txt files
+                
+    # quit system and save votes and place info into txt files cx0206
     def quit(self):
         if self.users.root:
             with open(self.votes_file, "w") as file:
@@ -207,7 +204,6 @@ class AttractionSystem:
             print("No attraction records to save.")
         sys.exit(0)
 
-
 # 实例化AttractionSystem
 system = AttractionSystem()
 
@@ -224,31 +220,21 @@ def main_page():
 def submit_place():
     if request.method == 'POST':
         data = request.form
-        ###加了改小写
-        country = data.get('country', '').lower()  # 转换为小写
-        place = data.get('place', '').lower()  # 转换为小写
-        type = data.get('type', '').lower()
-
-        ###加了type报错
         valid_types = ['natural attractions', 'cultural and historical attractions', 'modern entertainment attractions']
         if type not in valid_types:
-            # 如果类型无效，渲染并返回一个错误页面
             return render_template('error.html', error="Invalid type provided. Please choose a valid attraction type.")
-        
-        ###改了submit那个页面提交之后不要跳往新的页面
+
         try:
-            # 确保字段与HTML表单的name属性相匹配
-            attraction = Attraction(data['place'], data['country'], data['type'],data['postalCode'])
+            attraction = Attraction(data['place'].lower(), data['country'].lower(), data['type'].lower(), data['postalCode'])
             system.insert_attraction(attraction)
-            # 返回一个带有消息的JSON响应
-            return jsonify({"message": "Successfully submitted!"}), 200
+            # 重定向到该地点的投票页面
+            return redirect(url_for('place_vote_info', name=attraction.name))
         except KeyError as e:
-            # 返回一个带有错误消息的JSON响应
-            return jsonify({"message": "Invalid input! Missing data."}), 400
+            return render_template('error.html', error="Invalid input! Missing data.")
+
     else:
-        # 对GET请求，显示表单
         return render_template('submit_place.html')
-#不要回到jsonify，直接在下面跳出成功提交
+
 
 
 
@@ -295,35 +281,38 @@ def search():
         return jsonify(attractions_dict)
 
 
-# 新建一个视图函数用于显示景点的投票信息
-@app.route('/tourism/PlaceVoteInfo/<name>', methods=['GET','POST'])
-def vote(name):
-    if request.method == 'GET':
-        attraction_node = system.attractions.find(name)
+@app.route('/tourism/PlaceVoteInfo/<name>', methods=['GET', 'POST'])
+def place_vote_info(name):
+    app.logger.info(f"Looking up attraction '{name}'.")
+    attraction_node = system.attractions.find(name)
+    if attraction_node:
         attraction = attraction_node.data
-        
-        # 将景点信息转换为可以序列化的字典列表
-        attraction_dict = {
-            'name': attraction.name,
-            'country': attraction.country,
-            'type': attraction.type,
-            'postcode': attraction.postcode,
-            'votes': attraction.votes,
-            'comments': attraction.comments
-        }
-            
-        # 渲染模板并传递数据
-        return render_template('votes.html', attraction=attraction, attraction_dict=attraction_dict)
-    
-    # elif request.method == 'POST':
-    #     # 从哪里获取？
-    #     user_id = request.args.get('user_id')
-    #     user_node = system.users.find(user_id)
-    #     if user_node:
-    #         user = user_node.data
-    #         return render_template('voting_history.html', user=user)
-        
-    #     attraction_node = system.vote(user_id, name, comment)   
+        app.logger.info(f"Attraction '{name}' found with {attraction.votes} votes.")
+        if request.method == 'POST':
+            data = request.json
+            comment = data.get('comment', '')
+            attraction_node = system.attractions.find(name)
+            if attraction_node:
+                attraction = attraction_node.data
+                attraction.add_vote(comment)  # Make sure the Attraction class has this method
+                # After a vote is submitted successfully, return a JSON response
+                return jsonify({"message": "Vote submitted successfully"}), 200
+            else:
+                # If the attraction is not found, return a JSON error response
+                return jsonify({"error": "Attraction not found"}), 404
+        else:
+            # GET logic here
+            attraction_node = system.attractions.find(name)
+            if attraction_node:
+                attraction = attraction_node.data
+            return render_template('votes.html', attraction=attraction)
+    else:
+        app.logger.error(f"Attraction '{name}' not found.")
+        return jsonify({"error": "Attraction not found"}), 404
+
+
+
+
 
 @app.route('/tourism/Analysis', methods=['GET'])
 def analysis():
@@ -352,4 +341,3 @@ def analysis():
 
 if __name__ == '__main__':
     app.run(debug=True,port=5050)
-
