@@ -161,16 +161,18 @@ def submit_place():
             # 如果类型无效，渲染并返回一个错误页面
             return render_template('error.html', error="Invalid type provided. Please choose a valid attraction type.")
         
+        ###改了submit那个页面提交之后不要跳往新的页面
         try:
-            # 确保这里的字段与HTML表单的name属性相匹配
+            # 确保字段与HTML表单的name属性相匹配
             attraction = Attraction(data['place'], data['country'], data['type'],data['postalCode'])
             system.insert_attraction(attraction)
-
+            # 返回一个带有消息的JSON响应
             return jsonify({"message": "Successfully submitted!"}), 200
         except KeyError as e:
+            # 返回一个带有错误消息的JSON响应
             return jsonify({"message": "Invalid input! Missing data."}), 400
     else:
-        # GET请求时显示表单
+        # 对GET请求，显示表单
         return render_template('submit_place.html')
 #不要回到jsonify，直接在下面跳出成功提交
 
