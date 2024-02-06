@@ -1,14 +1,13 @@
-
-
 import logging
 
-from flask import Flask, request, render_template, jsonify
+from flask import Flask, request, render_template, jsonify, session, request
 import matplotlib.pyplot as plt
 import io
 import base64
 import sys
 
 app = Flask(__name__)
+app.secret_key = 'your_secret_key'
 
 class TreeNode:
     def __init__(self, key, data=None):
@@ -210,11 +209,15 @@ system = AttractionSystem()
 
 @app.route('/tourism', methods=['GET', 'POST'])
 def main_page():
-    user_id = request.args.get('user_id')
     if request.method == 'POST':
+        user_id = request.form.get('user_id')
+        session['user_id'] = user_id  
+        # 将用户ID存储在会话中，后续使用通过
+        # data = request.form
+        # user_id = session.get('user_id')
         return render_template('main_page.html')
     else:
-        return render_template('main_page.html')  # 处理GET请求
+        return render_template('main_page.html')
 
 
 @app.route('/tourism/submit', methods=['GET', 'POST'])
