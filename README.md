@@ -1,7 +1,3 @@
-Certainly! Here's a README file for the provided code:
-
----
-
 # Attraction Voting System
 
 This is a web application designed to allow users to vote for attractions, view their voting history, submit new attractions, and analyze voting data. The application is built using Flask, a Python web framework.
