@@ -56,35 +56,10 @@
         </ul>
         <button onclick="window.location.href='/tourism';" class="button">Return to Main Site</button>
     </div>
-    
 
     <script>
-        // 获取投票历史数据
+        // Get voting history data
         var vote_history = {{ vote_history | safe }};
-
-        @app.route('/tourism/VoteHistory', methods=['GET'])
-def voting_history():
-    try:
-        user_id = session.get('user_id')
-        if not user_id:
-            return "User not logged in", 403
-
-        user_node = system.users.find(user_id)
-        if not user_node:
-            return "User not found", 404
-
-        vote_history = [{'name': vote_node.key, 'comment': vote_node.data} for vote_node in user_node.data.vote_history.root.inorder()]
-        return render_template('voting_history.html', vote_history=vote_history)
-    except Exception as e:
-        app.logger.error('An error occurred: %s', str(e))
-        return jsonify({'error': str(e)}), 500
-
-
-// Call the function to display voting history
-displayVotingHistory();
-
-
-
     </script>
 
 </body>
