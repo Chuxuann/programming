@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -60,7 +61,7 @@
         <p>Country: {{ attraction.country }}</p>
         <p>Postal Code: {{ attraction.postcode }}</p>
         <p>Votes: {{ attraction.votes }}</p>
-        <!-- ... 其他景点信息 ... -->
+        <!-- ... Other attraction information ... -->
         <textarea id="voterCommentInput"></textarea>
         <button onclick="submitVote()" class="button">Vote</button>
         <button onclick="returnToMainPage()" class="button">Return to Main Page</button>
@@ -101,7 +102,7 @@
     if (!response.ok) {
         return response.json().then(data => {
             if (data.error) {
-                // 如果后端返回了错误消息，显示错误消息在页面底部
+                // If the backend returns an error message, display the error message at the bottom of the page
                 var errorMessage = document.getElementById('error-message');
                 errorMessage.textContent = data.error;
                 errorMessage.style.color = 'red';
@@ -115,13 +116,13 @@
 
     .then(data => {
     if (data.message) {
-        // 在消息盒子中显示成功消息并使用绿色文字
+        // Display the success message in the message box with green text
         messageBox.textContent = 'Vote submitted successfully';
         messageBox.style.color = 'green';
         messageBox.style.display = 'block';
-        commentInput.value = ''; // 清空评论输入框
+        commentInput.value = ''; // Clear the comment input field
     } else if (data.error) {
-        // 如果后端返回了错误消息，显示错误消息在页面底部
+        // If the backend returns an error message, display the error message at the bottom of the page
         var errorMessage = document.getElementById('error-message');
         errorMessage.textContent = data.error;
         errorMessage.style.display = 'block';
@@ -132,7 +133,7 @@
 
     .catch(error => {
         console.error('Error:', error);
-        // 处理其他错误，例如网络问题
+        // Handle other errors, such as network issues
         messageBox.textContent = 'Error submitting vote';
         messageBox.style.color = 'red';
         messageBox.style.display = 'block';
@@ -140,9 +141,10 @@
 }
 
     function returnToMainPage() {
-    window.location.href = '/tourism'; // 这里设置主页的 URL
+    window.location.href = '/tourism'; // Set the URL of the main page here
 }
     </script>
     
     </body>
     </html>
+```
