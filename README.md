@@ -41,11 +41,3 @@ This is a web application designed to allow users to vote for attractions, view 
 ## Contributing
 
 Contributions are welcome! If you find any issues or have suggestions for improvements, please open an issue or create a pull request.
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
----
-
-Feel free to modify and expand upon this README as needed!
