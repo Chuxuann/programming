@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analysis</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            text-align: center; /* Center align content */
+        }
+        h1 {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .search-field {
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: center; /* Center align horizontally */
+        }
+        .search-field input {
+            padding: 10px;
+            font-size: 16px;
+            margin-right: 10px;
+        }
+        .search-field button {
+            padding: 10px;
+            font-size: 16px;
+            background-color: #36CFFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-align: center;
+        }
+        .chart-container {
+            margin-top: 20px;
+        }
+        .return-button {
+            padding: 10px;
+            font-size: 16px;
+            background-color: #36CFFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-align: center;
+            display: block;
+            margin: 20px auto; /* Center align horizontally with some bottom margin */
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Analysis</h1>
+        <div class="search-field">
+            <form id="searchForm" onsubmit="event.preventDefault(); searchData()">
+                <input type="text" name="country" id="country" placeholder="Country">
+                <input type="text" name="type" id="type" placeholder="Type">
+                <button type="submit">Search</button>
+            </form>
+        </div>
+        <div class="chart-container">
+            <canvas id="barChart"></canvas>
+        </div>
+        <button onclick="window.location.href='/tourism';" class="return-button">Return to Main Site</button>
+    </div>
+    <script>
+        var chartInstance;
+
+        function searchData() {
+            var country = document.getElementById('country').value;
+            var type = document.getElementById('type').value;
+
+            fetch('/tourism/Analysis', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ country: country, type: type })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log("Data received:", data);
+                updateChart(data);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+
+        function updateChart(chartData) {
+    var ctx = document.getElementById('barChart').getContext('2d');
+
+    if (chartInstance) {
+        chartInstance.destroy();
+    }
+
+    // Sort chartData by votes in descending order
+    var sortedChartData = Object.entries(chartData)
+        .sort((a, b) => b[1] - a[1])
+        .reduce((obj, [key, value]) => {
+            obj[key] = value;
+            return obj;
+        }, {});
+
+    chartInstance = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: Object.keys(sortedChartData),
+            datasets: [{
+                axis: 'y',
+                label: 'Votes Count',
+                data: Object.values(sortedChartData),
+                backgroundColor: 'rgba(0, 123, 255, 0.5)',
+                borderColor: 'rgba(0, 123, 255, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            indexAxis: 'y',
+            scales: {
+                xAxes: [{
+                    ticks: {
+                        precision: 0
+                    }
+                }]
+            }
+        }
+    });
+}
+
+    </script>
+</body>
+</html>

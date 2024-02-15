@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Location Submission - Global Tourist Attraction Survey System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .input-field {
+            margin-bottom: 20px;
+        }
+        .input-field label {
+            display: block;
+        }
+        .input-field input, .input-field select {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+        }
+        .button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            font-size: 18px;
+            text-align: center;
+            background-color: #36CFFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .note {
+            font-size: 0.9em;
+            color: #666;
+            margin-top: 5px;
+        }
+        .success-message, .error-message {
+            color: green; /* Success message in green */
+            margin-top: 20px;
+        }
+        .error-message {
+            color: red; /* Error message in red */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>User Location Submission - Global Tourist Attraction Survey System</h1>
+        <form id="locationForm" action="/tourism/submit" method="post">
+            <div class="input-field">
+                <label for="country">Country:</label>
+                <input type="text" id="country" name="country" required>
+                <div class="note">Note: Please type everything in lowercase and filling in non-letters will result in an error.</div>
+            </div>
+            <div class="input-field">
+                <label for="place">Place:</label>
+                <input type="text" id="place" name="place" required>
+                <div class="note">Note:  Please type everything in lowercase and filling in non-letters will result in an error.</div>
+            </div>
+            <div class="input-field">
+                <label for="type">Type:</label>
+                <input type="text" id="type" name="type" required>
+                <div class="note">Note:  Please type everything in lowercase and only 'natural attractions', 'cultural and historical attractions', and 'modern entertainment attractions' are valid types.</div>
+            </div>
+            <div class="input-field">
+                <label for="postalCode">Postal Code:</label>
+                <input type="text" id="postalCode" name="postalCode" required>
+                <div class="note">Note: Filling in non-numeric characters will result in an error.</div>
+            </div>
+            <button type="submit" class="button">Submit</button>
+            <button type="button" onclick="window.location.href='/tourism';" class="button">Return to Main Site</button>
+        </form>
+        <div id="successMessage" class="success-message"></div>
+        <div id="errorMessage" class="error-message"></div>
+    </div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+$(document).ready(function() {
+    $('#locationForm').on('submit', function(e) {
+        e.preventDefault(); // Prevent the form from submitting via the browser.
+        $.ajax({
+            url: '/tourism/submit', // Your submission URL
+            type: 'POST',
+            data: $(this).serialize(), // Serialize the form data
+            dataType: 'json', // Expect JSON response from the server
+            success: function(response) {
+                // On success, show the success message and hide the error message.
+                $('#successMessage').show().text(response.message || 'Successfully submitted!');
+                $('#errorMessage').hide();
+            },
+            error: function(xhr, status, error) {
+                // On failure, show the error message and hide the success message.
+                var errorMessage = xhr.status === 422 ? xhr.responseJSON.errors : 'Submission failed. Please try again.';
+                $('#errorMessage').show().text(errorMessage);
+                $('#successMessage').hide();
+            }
+        });
+    });
+});
+</script>
+
+</body>
+</html>

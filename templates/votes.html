@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Place Voting</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background: #f4f4f4;
+    }
+    .container {
+        max-width: 800px;
+        margin: 20px auto;
+        padding: 20px;
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    h1 {
+        color: #333;
+    }
+    .highlight {
+        font-weight: bold;
+        color: #27a;
+    }
+    .button {
+        display: block;
+        width: 100%;
+        padding: 10px 20px;
+        font-size: 16px;
+        background-color: #36CFFF;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        text-decoration: none;
+        transition: background-color 0.3s;
+        margin-top: 10px;
+    }
+    .button:hover {
+        background-color: #2baaf7;
+    }
+    textarea {
+        width: calc(100% - 22px);
+        padding: 10px;
+        border-radius: 4px;
+        border: 1px solid #ddd;
+        min-height: 100px;
+        margin-bottom: 10px;
+    }
+</style>
+</head>
+<body>
+    <div class="container">
+        <h1>{{ attraction.name }}</h1>
+        <p>Type: {{ attraction.type }}</p>
+        <p>Country: {{ attraction.country }}</p>
+        <p>Postal Code: {{ attraction.postcode }}</p>
+        <p>Votes: {{ attraction.votes }}</p>
+        <!-- ... 其他景点信息 ... -->
+        <textarea id="voterCommentInput"></textarea>
+        <button onclick="submitVote()" class="button">Vote</button>
+        <button onclick="returnToMainPage()" class="button">Return to Main Page</button>
+
+
+    </div>
+    <div id="error-message" style="color: red;"></div>
+    <div id="messageBox" style="color: green;"></div>
+
+
+
+    <script>
+ function submitVote() {
+    var commentInput = document.getElementById('voterCommentInput');
+    var comment = commentInput.value.trim();
+    var attractionName = '{{ attraction.name }}';
+    var messageBox = document.getElementById('messageBox');
+
+    if (!comment) {
+        messageBox.textContent = 'Please enter a comment before voting.';
+        messageBox.style.color = 'red';
+        messageBox.style.display = 'block';
+        return;
+    }
+
+    var voteData = {
+        comment: comment
+    };
+
+    fetch('/tourism/PlaceVoteInfo/' + encodeURIComponent(attractionName), {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(voteData),
+    })
+    .then(response => {
+    if (!response.ok) {
+        return response.json().then(data => {
+            if (data.error) {
+                // 如果后端返回了错误消息，显示错误消息在页面底部
+                var errorMessage = document.getElementById('error-message');
+                errorMessage.textContent = data.error;
+                errorMessage.style.color = 'red';
+                errorMessage.style.display = 'block';
+            }
+            throw new Error('Network response was not ok');
+        });
+    }
+    return response.json();
+})
+
+    .then(data => {
+    if (data.message) {
+        // 在消息盒子中显示成功消息并使用绿色文字
+        messageBox.textContent = 'Vote submitted successfully';
+        messageBox.style.color = 'green';
+        messageBox.style.display = 'block';
+        commentInput.value = ''; // 清空评论输入框
+    } else if (data.error) {
+        // 如果后端返回了错误消息，显示错误消息在页面底部
+        var errorMessage = document.getElementById('error-message');
+        errorMessage.textContent = data.error;
+        errorMessage.style.display = 'block';
+    } else {
+        throw new Error('Error submitting vote');
+    }
+})
+
+    .catch(error => {
+        console.error('Error:', error);
+        // 处理其他错误，例如网络问题
+        messageBox.textContent = 'Error submitting vote';
+        messageBox.style.color = 'red';
+        messageBox.style.display = 'block';
+    });
+}
+
+    function returnToMainPage() {
+    window.location.href = '/tourism'; // 这里设置主页的 URL
+}
+    </script>
+    
+    </body>
+    </html>
