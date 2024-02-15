@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -81,35 +82,35 @@
     </div>
 
     <script>
-        // JavaScript代码，监听搜索表单的提交事件
+        // JavaScript code to listen for the submit event of the search form
         document.getElementById('searchForm').addEventListener('submit', function (event) {
-            event.preventDefault(); // 阻止默认的表单提交行为
+            event.preventDefault(); // Prevent default form submission behavior
 
-            // 获取用户输入的搜索条件
+            // Get the search criteria entered by the user
             var countryValue = document.getElementById("country").value;
             var typeValue = document.getElementById("type").value;
 
-            // 向后端发送POST请求，将搜索条件传递给服务器
+            // Send a POST request to the backend with the search criteria
             fetch(`/tourism/PlaceVoteInfo`, {
                 method: 'POST',
-                body: new FormData(this), // 将表单数据发送到后端
+                body: new FormData(this), // Send form data to the backend
             })
             .then(response => {
                 if (response.ok) {
-                    return response.json(); // 解析JSON数据
+                    return response.json(); // Parse JSON data
                 } else {
                     throw new Error('Request failed');
                 }
             })
             .then(data => {
-                // 处理后端返回的数据，更新页面上的内容
+                // Handle the data returned by the backend and update the content on the page
                 var placesList = document.getElementById("placesList");
-                placesList.innerHTML = ""; // 清空当前列表
+                placesList.innerHTML = ""; // Clear the current list
 
-                // 这里假设后端返回的数据是一个包含国家、地点和投票数的对象数组
+                // Assuming the data returned by the backend is an array of objects containing country, place, and vote count
                 data.forEach(item => {
                     var row = document.createElement("tr");
-                    // 修改这一行，将"Place"列的元素改为链接
+                    // Modify this line to make the "Place" column element a link
                     var encodedName = encodeURIComponent(item.name);
                     var placeLink = `<a href="/tourism/PlaceVoteInfo/${encodedName}">${item.name}</a>`;
                     row.innerHTML = `<td>${placeLink}</td><td>${item.country}</td><td>${item.type}</td><td>${item.votes}</td>`;
@@ -123,3 +124,4 @@
     </script>
 </body>
 </html>
+```
